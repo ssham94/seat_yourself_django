@@ -21,11 +21,12 @@ class ReservationForm(ModelForm):
         restaurant = self.instance.restaurant
         closing = restaurant.closing_time
         opening = restaurant.opening_time
+        last_time = restaurant.last_reservation_time
 
         if restaurant.open_past_midnight():
             if closing < cleaned_time and cleaned_time < opening:
                 self.add_error('time', 'Restaurant not open at that time')
-        elif cleaned_time > closing.replace(hour=(closing.hour-1)):
+        elif cleaned_time > last_time and cleaned_time < closing:
                 self.add_error('time', 'Restaurant does not accept reservations an hour before closing')
         else:
             if cleaned_time < opening or closing < cleaned_time:
@@ -74,10 +75,11 @@ class RestaurantForm(ModelForm):
     image = URLField()
     description = Textarea()
     category = ModelChoiceField(queryset=Category.objects.all())
+    last_reservation_time = TimeField(widget=TimeInput(attrs={'type': 'time'}))
 
     class Meta:
         model = Restaurant
-        fields = ['name', 'description', 'address', 'phone', 'capacity', 'opening_time', 'closing_time', 'image', 'category']
+        fields = ['name', 'description', 'address', 'phone', 'capacity', 'opening_time', 'closing_time', 'last_reservation_time', 'image', 'category']
 
 class ProfileForm(ModelForm):
     first_name = CharField()
