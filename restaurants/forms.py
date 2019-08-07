@@ -25,6 +25,8 @@ class ReservationForm(ModelForm):
         if restaurant.open_past_midnight():
             if closing < cleaned_time and cleaned_time < opening:
                 self.add_error('time', 'Restaurant not open at that time')
+        elif cleaned_time > closing.replace(hour=(closing.hour-1)):
+                self.add_error('time', 'Restaurant does not accept reservations an hour before closing')
         else:
             if cleaned_time < opening or closing < cleaned_time:
                 self.add_error('time', 'Restaurant not open at that time')
@@ -57,7 +59,6 @@ class ReservationForm(ModelForm):
         reservation_datetime = datetime(cleaned_date.year, cleaned_date.month, cleaned_date.day, cleaned_time.hour, cleaned_time.minute)
         if reservation_datetime < (datetime.now() + timedelta(minutes=30)):
             self.add_error('time', 'Reservation must be at least 30 minutes in future')
-
         if not restaurant.room_for(cleaned_date, cleaned_time, cleaned_party_size):
             self.add_error('time', 'Restaurant is booked at that time')
 

@@ -2,6 +2,11 @@
 {% block content %}
 <main class='restaurant'>
     <h2>{{ restaurant.name }}</h2>
+    <img src="{{ restaurant.image }}" alt = "restaurant_image">
+    <p>{{ restaurant.address }}<p>
+    <p>{{ restaurant.phone }}</p>
+    <p>{{ restaurant.description }}</p>
+    <p>From {{ restaurant.opening_time }} to {{ restaurant.closing_time }}</p>
     {% if user.is_authenticated %}
       {% if restaurant.owner == user %}
       <p> <a href="{% url 'restaurant_edit' id=restaurant.pk %}">Edit restaurant details</a> </p>
@@ -24,15 +29,17 @@
 
       {% if reservations %}
       <ol>
-        {% for reservation in reservations %}
-        <li>
-              <p> <time datetime="{{ reservation.date_and_time }}">{{ reservation.date }} at {{ reservation.time }} </time> </p>
-              <p> {{ reservation.user.profile.last_name }}, party of {{ reservation.party_size }} </p>
-              {% if reservation.notes %}
-                <p class='notes'>{{ reservation.notes }}</p>
-              {% endif %}
-        </li>
-        {% endfor %}
+        {% if restaurant.owner != user %}
+          {% for reservation in reservations %}
+          <li>
+                <p> <time datetime="{{ reservation.date_and_time }}">{{ reservation.date }} at {{ reservation.time }} </time> </p>
+                <p> {{ reservation.user.profile.last_name }}, party of {{ reservation.party_size }} </p>
+                {% if reservation.notes %}
+                  <p class='notes'>{{ reservation.notes }}</p>
+                {% endif %}
+          </li>
+          {% endfor %}
+        {% endif %}
       </ol>
       {% endif %}
       <form method='POST' action="{% url 'reservation_create' restaurant_id=restaurant.pk%}">
