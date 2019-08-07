@@ -2,6 +2,15 @@
   <i class="logo fas fa-utensils"></i>
   <ul>
     <li>
+      <form action="{% url 'restaurant_search' %}" method="GET">
+        <label for="restaurant-search">
+          <span class='my_search_bar'>Search:
+            <input type="search" id="restaurant-search" name="query" value="{{ query }}"/>
+          </span>
+        </label>
+      </form>
+    </li> 
+    <li>
       <a class="underline" href="{% url 'restaurants_list' %}">All restaurants</a>
     </li>
     <li>
